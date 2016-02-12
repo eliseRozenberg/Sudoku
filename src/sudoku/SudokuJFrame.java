@@ -139,7 +139,7 @@ public class SudokuJFrame extends JFrame {
 	}
 
 	public void addActionListeners() {
-		//fix levels
+		// fix levels
 		easy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -163,8 +163,8 @@ public class SudokuJFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				for (int i = 0; i < board.length; i++) {
 					for (int j = 0; j < board.length; j++) {
-						if (!board[i][j].isShown() && guiBoard[i][j].getText() != "") {
-							if (!sudokuBoard.check(guiBoard[i][j].getText(), i, j)) {
+						if (!board[i][j].isShown() && !guiBoard[i][j].getText().equals("")) {
+							if (!sudokuBoard.check(Integer.parseInt(guiBoard[i][j].getText()), i, j)) {
 								guiBoard[i][j].setBackground(Color.RED);
 								// when does it change back - after input?
 							}

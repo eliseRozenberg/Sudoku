@@ -150,11 +150,7 @@ public class SudokuBoard {
 		}
 	}
 
-	public boolean check(String userString, int row, int column) {
-		if (userString.equals("")) {
-			return true;
-		}
-		int userVal = Integer.parseInt(userString);
+	public boolean check(int userVal, int row, int column) {
 		if (userVal == board[row][column].getValue()) {
 			return true;
 		} else {
