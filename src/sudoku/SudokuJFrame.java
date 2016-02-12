@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -35,8 +37,7 @@ public class SudokuJFrame extends JFrame {
 	public static final Color OPEN_CELL_TEXT_NO = Color.RED;
 	public static final Color CLOSED_CELL_BGCOLOR = new Color(240, 240, 240); // RGB
 	public static final Color CLOSED_CELL_TEXT = Color.BLACK;
-	public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD,
-			20);
+	public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD, 20);
 
 	// The game board composes of 9x9 JTextFields,
 	// each containing String "1" to "9", or empty String
@@ -105,9 +106,9 @@ public class SudokuJFrame extends JFrame {
 
 		// Set the size of the content-pane and pack all the components
 		// under this container.
-		sudokuPanel
-				.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+		sudokuPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 		container.add(sudokuPanel);
+		addActionListeners();
 		pack();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Handle window closing
@@ -135,6 +136,50 @@ public class SudokuJFrame extends JFrame {
 				}
 			}
 		}
+	}
+
+	public void addActionListeners() {
+		//fix levels
+		easy.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGame(40);
+			}
+		});
+		medium.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGame(50);
+			}
+		});
+		hard.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGame(60);
+			}
+		});
+		check.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < board.length; i++) {
+					for (int j = 0; j < board.length; j++) {
+						if (!board[i][j].isShown() && guiBoard[i][j].getText() != "") {
+							if (!sudokuBoard.check(guiBoard[i][j].getText(), i, j)) {
+								guiBoard[i][j].setBackground(Color.RED);
+								// when does it change back - after input?
+							}
+						}
+
+					}
+				}
+			}
+		});
+		hint.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
 	}
 
 	/** The entry main() entry method */

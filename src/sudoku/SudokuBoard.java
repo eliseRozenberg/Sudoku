@@ -150,8 +150,12 @@ public class SudokuBoard {
 		}
 	}
 
-	public boolean check(int row, int column) {
-		if (board[row][column].getUserValue() == board[row][column].getValue()) {
+	public boolean check(String userString, int row, int column) {
+		if (userString.equals("")) {
+			return true;
+		}
+		int userVal = Integer.parseInt(userString);
+		if (userVal == board[row][column].getValue()) {
 			return true;
 		} else {
 			return false;
