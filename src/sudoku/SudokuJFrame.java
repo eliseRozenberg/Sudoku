@@ -117,6 +117,7 @@ public class SudokuJFrame extends JFrame {
 	}
 
 	public void newGame(int difficulty) {
+		sudokuBoard.resetTable();
 		sudokuBoard.fillBoard(difficulty);
 		board = sudokuBoard.getBoard();
 

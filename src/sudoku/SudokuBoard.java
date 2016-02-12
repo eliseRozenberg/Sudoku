@@ -19,7 +19,6 @@ public class SudokuBoard {
 				board[i][j] = new SudokuCell();
 			}
 		}
-
 	}
 
 	public SudokuCell[][] getBoard() {
@@ -155,6 +154,14 @@ public class SudokuBoard {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public void resetTable() {
+		for (int i = 0; i < 9; ++i) {
+			for (int j = 0; j < 9; ++j) {
+				board[i][j].reset();
+			}
 		}
 	}
 
