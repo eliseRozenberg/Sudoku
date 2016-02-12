@@ -35,7 +35,7 @@ public class SudokuCell implements Serializable {
 		value = number;
 	}
 
-	public void reset() {
+	public void clear() {
 		value = 0;
 		show = false;
 	}

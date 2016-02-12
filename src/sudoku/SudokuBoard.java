@@ -14,9 +14,9 @@ public class SudokuBoard {
 		boardSize = blockSize * blockSize;
 		numberOfCells = boardSize * boardSize;
 		board = new SudokuCell[9][9];
-		for (int i = 0; i < 9; ++i) {
-			for (int j = 0; j < 9; ++j) {
-				board[i][j] = new SudokuCell();
+		for (int row = 0; row < 9; ++row) {
+			for (int col = 0; col < 9; ++col) {
+				board[row][col] = new SudokuCell();
 			}
 		}
 	}
@@ -91,13 +91,13 @@ public class SudokuBoard {
 	 * @return True if current is legal, false otherwise.
 	 */
 	private boolean legalMove(int x, int y, int current) {
-		for (int i = 0; i < 9; i++) {
-			if (current == board[x][i].getValue()) {
+		for (int col = 0; col < 9; col++) {
+			if (current == board[x][col].getValue()) {
 				return false;
 			}
 		}
-		for (int i = 0; i < 9; i++) {
-			if (current == board[i][y].getValue()) {
+		for (int row = 0; row < 9; row++) {
+			if (current == board[row][y].getValue()) {
 				return false;
 			}
 		}
@@ -117,9 +117,9 @@ public class SudokuBoard {
 				cornerY = 3;
 			}
 		}
-		for (int i = cornerX; i < 10 && i < cornerX + 3; i++) {
-			for (int j = cornerY; j < 10 && j < cornerY + 3; j++) {
-				if (current == board[i][j].getValue()) {
+		for (int row = cornerX; row < 10 && row < cornerX + 3; row++) {
+			for (int col = cornerY; col < 10 && col < cornerY + 3; col++) {
+				if (current == board[row][col].getValue()) {
 					return false;
 				}
 			}
@@ -157,10 +157,10 @@ public class SudokuBoard {
 		}
 	}
 
-	public void resetTable() {
+	public void clearTable() {
 		for (int i = 0; i < 9; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				board[i][j].reset();
+				board[i][j].clear();
 			}
 		}
 	}

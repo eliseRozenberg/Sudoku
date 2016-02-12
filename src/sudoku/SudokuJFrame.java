@@ -9,20 +9,29 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame; // Uses Swing's Container/Components
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 
 // Uses AWT's Event Handlers
+
+//remove variables and fix
+///Organize code
 
 /**
  * The Sudoku game. To solve the number puzzle, each row, each column, and each
  * of the nine 3×3 sub-grids shall contain all of the digits from 1 to 9
  */
 public class SudokuJFrame extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Name-constants for the game properties
 	public static final int GRID_SIZE = 9; // Size of the board
 	public static final int SUBGRID_SIZE = 3; // Size of the sub-grid
@@ -49,9 +58,11 @@ public class SudokuJFrame extends JFrame {
 	private JButton medium;
 	private JButton hard;
 	private JButton check;
+	private JButton reset;
 	private JButton hint;
 	private JPanel levelPanel;
 	private JPanel utilitiesPanel;
+	private int hintAmount = 3;
 
 	/**
 	 * Constructor to setup the game and the UI Components
@@ -62,6 +73,7 @@ public class SudokuJFrame extends JFrame {
 
 		sudokuPanel = new JPanel();
 		sudokuPanel.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE)); // 9x9
+		sudokuPanel.setBorder(new LineBorder(Color.BLACK, 3, true));
 		// GridLayout
 
 		levelPanel = new JPanel();
@@ -71,7 +83,8 @@ public class SudokuJFrame extends JFrame {
 		medium = new JButton("Medium");
 		hard = new JButton("Hard");
 		check = new JButton("Check Board");
-		hint = new JButton("Hint");
+		hint = new JButton("Hint (" + hintAmount + ")");
+		reset = new JButton("Reset");
 
 		levelPanel.add(easy);
 		levelPanel.add(medium);
@@ -84,15 +97,20 @@ public class SudokuJFrame extends JFrame {
 
 		utilitiesPanel.add(hint);
 		utilitiesPanel.add(check);
+		utilitiesPanel.add(reset);
 
 		container.add(utilitiesPanel, BorderLayout.SOUTH);
 
 		// Construct 9x9 JTextFields and add to the content-pane
 		for (int row = 0; row < GRID_SIZE; ++row) {
 			for (int col = 0; col < GRID_SIZE; ++col) {
-				// set the size to only accept 1 number
-				guiBoard[row][col] = new JTextField(); // Allocate element of
-				// array
+				if (col % 3 == 0) {
+					// add logic for grid borders
+				}
+				// set the size to only accept 1 number and only numbers
+				// make listeners for keyboard arrows
+				guiBoard[row][col] = new JTextField();// array
+				guiBoard[row][col].setBorder(new LineBorder(Color.black, 1, true));
 				sudokuPanel.add(guiBoard[row][col]); // ContentPane adds
 				// JTextField
 
@@ -117,13 +135,16 @@ public class SudokuJFrame extends JFrame {
 	}
 
 	public void newGame(int difficulty) {
-		sudokuBoard.resetTable();
+		sudokuBoard.clearTable();
 		sudokuBoard.fillBoard(difficulty);
 		board = sudokuBoard.getBoard();
-
+		hint.setEnabled(true);
+		hintAmount = 3;
+		hint.setText("Hint (" + hintAmount + ")");
 		// Construct 9x9 JTextFields and add to the content-pane
 		for (int row = 0; row < GRID_SIZE; ++row) {
 			for (int col = 0; col < GRID_SIZE; ++col) {
+				guiBoard[row][col].setBorder(new LineBorder(Color.black, 1, true));
 				if (!board[row][col].isShown()) {
 					guiBoard[row][col].setText(""); // set to empty string
 					guiBoard[row][col].setEditable(true);
@@ -140,7 +161,7 @@ public class SudokuJFrame extends JFrame {
 	}
 
 	public void addActionListeners() {
-		// fix levels
+		//
 		easy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -150,35 +171,71 @@ public class SudokuJFrame extends JFrame {
 		medium.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newGame(50);
+				newGame(45);
 			}
 		});
 		hard.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newGame(60);
+				newGame(50);
 			}
 		});
 		check.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < board.length; i++) {
-					for (int j = 0; j < board.length; j++) {
-						if (!board[i][j].isShown() && !guiBoard[i][j].getText().equals("")) {
-							if (!sudokuBoard.check(Integer.parseInt(guiBoard[i][j].getText()), i, j)) {
-								guiBoard[i][j].setBackground(Color.RED);
+				for (int row = 0; row < board.length; row++) {
+					for (int col = 0; col < board.length; col++) {
+						if (!board[row][col].isShown() && !guiBoard[row][col].getText().equals("")) {
+							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
+								guiBoard[row][col].setBorder(new LineBorder(Color.red, 2, true));
+
 								// when does it change back - after input?
+								// add listener
 							}
 						}
-
 					}
 				}
 			}
 		});
+
+		// randomizer to choose hint cell or can do sequentially 
+		// loop to go in order
+		// also a limit that will reset when use reset button or new game
+
 		hint.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				hint.setText("Hint (" + --hintAmount + ")");
+				Random rand = new Random();
+				int row, col;
+				do {
+					row = rand.nextInt(9);
+					col = rand.nextInt(9);
+				} while (!guiBoard[row][col].getText().equals(""));
+				guiBoard[row][col].setText(board[row][col].getValue() + "");
+				guiBoard[row][col].setBorder(new LineBorder(Color.green, 2, true));
+				guiBoard[row][col].setEditable(false);
+				if (hintAmount == 0) {
+					hint.setEnabled(false);
+					return;
+				}
+			}
+		});
+		reset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (int row = 0; row < board.length; row++) {
+					for (int col = 0; col < board.length; col++) {
+						if (!board[row][col].isShown()) {
+							guiBoard[row][col].setText("");
+							guiBoard[row][col].setEditable(true);
+							guiBoard[row][col].setBorder(new LineBorder(Color.black, 1, true));
+							hint.setEnabled(true);
+							hintAmount = 3;
+							hint.setText("Hint (" + hintAmount + ")");
+						}
+					}
+				}
 			}
 		});
 	}
