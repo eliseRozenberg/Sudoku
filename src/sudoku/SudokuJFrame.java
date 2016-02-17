@@ -1,7 +1,7 @@
 package sudoku;
 
 import java.awt.BorderLayout;
-import java.awt.Color; // Uses AWT's Layout Managers
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -18,24 +18,18 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame; // Uses Swing's Container/Components
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-// Uses AWT's Event Handlers
-
 //remove variables and fix
 //Organize code
 //set the size to only accept 1 number and only numbers
 //make listeners for keyboard arrows
 
-/**
- * The Sudoku game. To solve the number puzzle, each row, each column, and each
- * of the nine 3×3 sub-grids shall contain all of the digits from 1 to 9
- */
 public class SudokuJFrame extends JFrame {
 	/**
 	 * 
@@ -52,7 +46,10 @@ public class SudokuJFrame extends JFrame {
 	private Color emptyCellColor = Color.white;
 	private Color filledCellColor = Color.YELLOW;
 	private Color borderColor = Color.black;
-	private Font numbersFont = new Font("Monospaced", Font.BOLD, 40);
+	private Color fontColor = Color.green;
+	private Font numbersFont = new Font("Calibri", Font.BOLD, 40);
+	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
+	private Border levelButtonBorder = new LineBorder(Color.black, 0, true);
 
 	private Container container;
 	private JTextField[][] guiBoard;
@@ -77,7 +74,6 @@ public class SudokuJFrame extends JFrame {
 	private int mediumAmount = 45;
 	private int hardAmount = 50;
 	private int level;
-	private int hiddenAmount;
 
 	/**
 	 * Constructor to setup the game and the UI Components
@@ -108,14 +104,20 @@ public class SudokuJFrame extends JFrame {
 		for (int row = 0; row < boardSize; ++row) {
 			for (int col = 0; col < boardSize; ++col) {
 				guiBoard[row][col] = new JTextField();
-				sudokuPanel.add(guiBoard[row][col]); 
+				sudokuPanel.add(guiBoard[row][col]);
 				guiBoard[row][col].setHorizontalAlignment(JTextField.CENTER);
-				guiBoard[row][col].setForeground(Color.green);
+				guiBoard[row][col].setForeground(fontColor);
 				guiBoard[row][col].setFont(numbersFont);
 				guiBoard[row][col].addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent e) {
 						JTextField textField = (JTextField) e.getSource();
+						if (textField.getText().length() > 1) {
+							textField.setText(textField.getText().charAt(0) + "");
+						}
+						if (!textField.getText().matches("^[1-9]")) {
+							textField.setText("");
+						}
 						for (int row = 0; row < boardSize; ++row) {
 							for (int col = 0; col < boardSize; ++col) {
 								if (guiBoard[row][col] == textField) {
@@ -136,7 +138,6 @@ public class SudokuJFrame extends JFrame {
 		pack();
 		// Set the size of the content-pane and pack all the components
 		// under this container.
-		
 
 	}
 
@@ -147,30 +148,29 @@ public class SudokuJFrame extends JFrame {
 		sudokuPanel.setLayout(new GridLayout(boardSize, boardSize)); // 9x9
 		sudokuPanel.setBorder(new LineBorder(borderColor, 3, true));
 		sudokuPanel.setPreferredSize(new Dimension(boardWidth, boardHeight));
-		
-		
+
 		levelPanel.setBackground(backgroundColor);
 		levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.Y_AXIS));
 
 		easy.setHorizontalAlignment(JButton.CENTER);
 		easy.setIcon(new ImageIcon("easy.jpg"));
 		easy.setBackground(backgroundColor);
-		easy.setBorder(new LineBorder(Color.black, 0, true));
+		easy.setBorder(levelButtonBorder);
 
 		medium.setHorizontalAlignment(JButton.CENTER);
 		medium.setBackground(backgroundColor);
 		medium.setIcon(new ImageIcon("medium.jpg"));
-		medium.setBorder(new LineBorder(Color.black, 0, true));
+		medium.setBorder(levelButtonBorder);
 
 		hard.setHorizontalAlignment(JButton.CENTER);
 		hard.setBackground(backgroundColor);
-		hard.setBorder(new LineBorder(Color.black, 0, true));
+		hard.setBorder(levelButtonBorder);
 		hard.setIcon(new ImageIcon("hard.jpg"));
 
 		utilitiesPanel.setBackground(backgroundColor);
 		utilitiesPanel.setLayout(new FlowLayout());
 
-		messageLabel.setFont(new Font("Rockwell Extra Bold", Font.PLAIN, 100));
+		messageLabel.setFont(messageLabelFont);
 		messageLabel.setHorizontalAlignment(JLabel.CENTER);
 		messageLabel.setForeground(Color.WHITE);
 	}
@@ -221,16 +221,16 @@ public class SudokuJFrame extends JFrame {
 		}
 	}
 
-	//add logic for grid borders
+	// add logic for grid borders
 	public void setBorder(int row, int col) {
 		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, borderColor));
-		if (col % 3 == 0) { 
+		if (col % subGridSize == 0) {
 			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, borderColor));
 		}
-		if (row % 3 == 0) {
+		if (row % subGridSize == 0) {
 			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, borderColor));
 		}
-		if (col % 3 == 0 && row % 3 == 0) {
+		if (col % subGridSize == 0 && row % subGridSize == 0) {
 			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, borderColor));
 		}
 	}
@@ -238,7 +238,6 @@ public class SudokuJFrame extends JFrame {
 	public void setGame(int levelAmount) {
 		newGame(levelAmount);
 		level = levelAmount;
-		hiddenAmount = levelAmount;
 	}
 
 	public void addActionListeners() {
@@ -271,7 +270,7 @@ public class SudokuJFrame extends JFrame {
 							// if not shown and not empty text, then check box
 							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
 								// if not correct set border to red
-								guiBoard[row][col].setBorder(new LineBorder(Color.red, 2, true));
+								guiBoard[row][col].setBorder(new LineBorder(Color.red, 3, true));
 							} else {
 								checkedAmount++;
 								guiBoard[row][col].setEditable(false);
@@ -304,12 +303,12 @@ public class SudokuJFrame extends JFrame {
 						hint.setEnabled(false);
 						return;
 					}
-				} else {//board is complete
+				} else {// board is complete
 					hint.setEnabled(false);
 				}
 			}
 		});
-		
+
 		reset.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
