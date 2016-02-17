@@ -25,10 +25,17 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+
 //remove variables and fix
 //Organize code
-//set the size to only accept 1 number and only numbers
 //make listeners for keyboard arrows
+//add background image
+//make gui cooler
+//add audio
+//make spaces between thing (margins)
+	//board not touching edge 
+	//level buttons not touching board
+//format utilities buttons
 
 public class SudokuJFrame extends JFrame {
 	/**
@@ -136,9 +143,6 @@ public class SudokuJFrame extends JFrame {
 		setGame(easyAmount);
 		addActionListeners();
 		pack();
-		// Set the size of the content-pane and pack all the components
-		// under this container.
-
 	}
 
 	public void format() {
@@ -146,7 +150,7 @@ public class SudokuJFrame extends JFrame {
 		container.setBackground(backgroundColor);
 
 		sudokuPanel.setLayout(new GridLayout(boardSize, boardSize)); // 9x9
-		sudokuPanel.setBorder(new LineBorder(borderColor, 3, true));
+		sudokuPanel.setBorder(new LineBorder(borderColor, 1, false));
 		sudokuPanel.setPreferredSize(new Dimension(boardWidth, boardHeight));
 
 		levelPanel.setBackground(backgroundColor);
