@@ -22,12 +22,15 @@ import javax.swing.JFrame; // Uses Swing's Container/Components
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 // Uses AWT's Event Handlers
 
 //remove variables and fix
-///Organize code
+//Organize code
+//set the size to only accept 1 number and only numbers
+//make listeners for keyboard arrows
 
 /**
  * The Sudoku game. To solve the number puzzle, each row, each column, and each
@@ -48,7 +51,8 @@ public class SudokuJFrame extends JFrame {
 	private Color backgroundColor = Color.pink;
 	private Color emptyCellColor = Color.white;
 	private Color filledCellColor = Color.YELLOW;
-	private Font numbersFont = new Font("Monospaced", Font.BOLD, 20);
+	private Color borderColor = Color.black;
+	private Font numbersFont = new Font("Monospaced", Font.BOLD, 40);
 
 	private Container container;
 	private JTextField[][] guiBoard;
@@ -103,18 +107,11 @@ public class SudokuJFrame extends JFrame {
 		// Construct 9x9 JTextFields and add to the content-pane
 		for (int row = 0; row < boardSize; ++row) {
 			for (int col = 0; col < boardSize; ++col) {
-				// set the size to only accept 1 number and only numbers
-				// make listeners for keyboard arrows
-				guiBoard[row][col] = new JTextField();// array
-				// guiBoard[row][col].setBorder(new LineBorder(Color.black, 1,
-				// true));
-				sudokuPanel.add(guiBoard[row][col]); // ContentPane adds
-				// JTextField
-
-				// Beautify all the cells
+				guiBoard[row][col] = new JTextField();
+				sudokuPanel.add(guiBoard[row][col]); 
 				guiBoard[row][col].setHorizontalAlignment(JTextField.CENTER);
+				guiBoard[row][col].setForeground(Color.green);
 				guiBoard[row][col].setFont(numbersFont);
-
 				guiBoard[row][col].addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent e) {
@@ -135,13 +132,11 @@ public class SudokuJFrame extends JFrame {
 		format();
 		addPanels();
 		setGame(easyAmount);
-
-		// Set the size of the content-pane and pack all the components
-		// under this container.
-		sudokuPanel.setPreferredSize(new Dimension(boardWidth, boardHeight));
-
 		addActionListeners();
 		pack();
+		// Set the size of the content-pane and pack all the components
+		// under this container.
+		
 
 	}
 
@@ -150,8 +145,10 @@ public class SudokuJFrame extends JFrame {
 		container.setBackground(backgroundColor);
 
 		sudokuPanel.setLayout(new GridLayout(boardSize, boardSize)); // 9x9
-		sudokuPanel.setBorder(new LineBorder(Color.BLACK, 3, true));
-
+		sudokuPanel.setBorder(new LineBorder(borderColor, 3, true));
+		sudokuPanel.setPreferredSize(new Dimension(boardWidth, boardHeight));
+		
+		
 		levelPanel.setBackground(backgroundColor);
 		levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.Y_AXIS));
 
@@ -173,7 +170,9 @@ public class SudokuJFrame extends JFrame {
 		utilitiesPanel.setBackground(backgroundColor);
 		utilitiesPanel.setLayout(new FlowLayout());
 
-		messageLabel.setFont(new Font("Rockwell Extra Bold", Font.PLAIN, 70));
+		messageLabel.setFont(new Font("Rockwell Extra Bold", Font.PLAIN, 100));
+		messageLabel.setHorizontalAlignment(JLabel.CENTER);
+		messageLabel.setForeground(Color.WHITE);
 	}
 
 	public void addPanels() {
@@ -197,7 +196,6 @@ public class SudokuJFrame extends JFrame {
 
 	public void newGame(int difficulty) {
 		messageLabel.setText("SUDOKU");
-		messageLabel.setHorizontalAlignment(JLabel.CENTER);
 		sudokuBoard.clearTable();
 		sudokuBoard.fillBoard(difficulty);
 		board = sudokuBoard.getBoard();
@@ -223,32 +221,18 @@ public class SudokuJFrame extends JFrame {
 		}
 	}
 
+	//add logic for grid borders
 	public void setBorder(int row, int col) {
-		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
-
-		/*
-		 * if (row == guiBoard[0].length - 1) {
-		 * guiBoard[row][col].setBorder(BorderFactory.createMatteBorder( 1, 1,
-		 * 4, 1, Color.BLACK));
-		 * 
-		 * } if (col == guiBoard.length - 1) {
-		 * guiBoard[row][col].setBorder(BorderFactory.createMatteBorder( 1, 1,
-		 * 1, 4, Color.BLACK));
-		 * 
-		 * }
-		 */
-
-		if (col % 3 == 0) { // add logic for grid borders
-			// set left border....
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, Color.BLACK));
+		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, borderColor));
+		if (col % 3 == 0) { 
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, borderColor));
 		}
 		if (row % 3 == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, Color.BLACK));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, borderColor));
 		}
 		if (col % 3 == 0 && row % 3 == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, Color.BLACK));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, borderColor));
 		}
-
 	}
 
 	public void setGame(int levelAmount) {
@@ -288,9 +272,6 @@ public class SudokuJFrame extends JFrame {
 							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
 								// if not correct set border to red
 								guiBoard[row][col].setBorder(new LineBorder(Color.red, 2, true));
-
-								// when does it change back - after input?
-								// add listener
 							} else {
 								checkedAmount++;
 								guiBoard[row][col].setEditable(false);
@@ -304,10 +285,6 @@ public class SudokuJFrame extends JFrame {
 				}
 			}
 		});
-
-		// randomizer to choose hint cell or can do sequentially
-		// loop to go in order
-		// also a limit that will reset when use reset button or new game
 
 		hint.addActionListener(new ActionListener() {
 			@Override
@@ -327,13 +304,13 @@ public class SudokuJFrame extends JFrame {
 						hint.setEnabled(false);
 						return;
 					}
-				} else {
+				} else {//board is complete
 					hint.setEnabled(false);
 				}
 			}
 		});
+		
 		reset.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (int row = 0; row < board.length; row++) {
