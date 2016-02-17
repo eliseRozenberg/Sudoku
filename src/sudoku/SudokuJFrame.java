@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import jdk.nashorn.internal.ir.WhileNode;
+
 // Uses AWT's Event Handlers
 
 //remove variables and fix
@@ -49,8 +51,7 @@ public class SudokuJFrame extends JFrame {
 	public static final Color OPEN_CELL_TEXT_NO = Color.RED;
 	public static final Color CLOSED_CELL_BGCOLOR = new Color(240, 240, 240); // RGB
 	public static final Color CLOSED_CELL_TEXT = Color.BLACK;
-	public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD,
-			20);
+	public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD, 20);
 
 	// The game board composes of 9x9 JTextFields,
 	// each containing String "1" to "9", or empty String
@@ -69,7 +70,7 @@ public class SudokuJFrame extends JFrame {
 	private JPanel utilitiesPanel;
 	private int hintAmount = 3;
 
-	private int easyAmount = 40;
+	private int easyAmount = 2;
 	private int mediumAmount = 45;
 	private int hardAmount = 50;
 	private int level;
@@ -138,12 +139,11 @@ public class SudokuJFrame extends JFrame {
 			}
 		}
 
-		newGame(40);
+		setGame(easyAmount);
 
 		// Set the size of the content-pane and pack all the components
 		// under this container.
-		sudokuPanel
-				.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+		sudokuPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 		container.add(sudokuPanel);
 		addActionListeners();
 		pack();
@@ -163,20 +163,6 @@ public class SudokuJFrame extends JFrame {
 		// Construct 9x9 JTextFields and add to the content-pane
 		for (int row = 0; row < GRID_SIZE; ++row) {
 			for (int col = 0; col < GRID_SIZE; ++col) {
-				guiBoard[row][col].setBorder(new LineBorder(Color.black, 1,
-						true));
-				if (col % 3 == 0) {
-					// add logic for grid borders
-					// set left border....
-					guiBoard[row][col].setBorder(BorderFactory
-							.createMatteBorder(1, 2, 1, 1, Color.BLACK));
-				} else if (row % 3 == 0) {
-					guiBoard[row][col].setBorder(BorderFactory
-							.createMatteBorder(2, 1, 1, 1, Color.BLACK));
-				} else if (col % 3 == 0 && row % 3 == 0) {
-					guiBoard[row][col].setBorder(BorderFactory
-							.createMatteBorder(2, 2, 1, 1, Color.BLACK));
-				}
 
 				if (!board[row][col].isShown()) {
 					guiBoard[row][col].setText(""); // set to empty string
@@ -189,8 +175,39 @@ public class SudokuJFrame extends JFrame {
 					guiBoard[row][col].setBackground(CLOSED_CELL_BGCOLOR);
 					guiBoard[row][col].setForeground(CLOSED_CELL_TEXT);
 				}
+
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
+
+				/*
+				 * if (row == guiBoard[0].length - 1) {
+				 * guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(
+				 * 1, 1, 4, 1, Color.BLACK));
+				 * 
+				 * } if (col == guiBoard.length - 1) {
+				 * guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(
+				 * 1, 1, 1, 4, Color.BLACK));
+				 * 
+				 * }
+				 */
+				if (col % 3 == 0) {
+					// add logic for grid borders
+					// set left border....
+					guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, Color.BLACK));
+				}
+				if (row % 3 == 0) {
+					guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, Color.BLACK));
+				}
+				if (col % 3 == 0 && row % 3 == 0) {
+					guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, Color.BLACK));
+				}
 			}
 		}
+	}
+
+	public void setGame(int levelAmount) {
+		newGame(levelAmount);
+		level = levelAmount;
+		hiddenAmount = levelAmount;
 	}
 
 	public void addActionListeners() {
@@ -198,25 +215,19 @@ public class SudokuJFrame extends JFrame {
 		easy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newGame(easyAmount);
-				level = easyAmount;
-				hiddenAmount = easyAmount;
+				setGame(easyAmount);
 			}
 		});
 		medium.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newGame(mediumAmount);
-				level = mediumAmount;
-				hiddenAmount = mediumAmount;
+				setGame(mediumAmount);
 			}
 		});
 		hard.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newGame(hardAmount);
-				level = hardAmount;
-				hiddenAmount = hardAmount;
+				setGame(hardAmount);
 			}
 		});
 		check.addActionListener(new ActionListener() {
@@ -225,20 +236,18 @@ public class SudokuJFrame extends JFrame {
 				int checkedAmount = 0;
 				for (int row = 0; row < board.length; row++) {
 					for (int col = 0; col < board.length; col++) {
-						if (!board[row][col].isShown()
-								&& !guiBoard[row][col].getText().equals("")) {
+						if (!board[row][col].isShown() && !guiBoard[row][col].getText().equals("")) {
 							// if not shown and not empty text, then check box
-							if (!sudokuBoard.check(Integer
-									.parseInt(guiBoard[row][col].getText()),
-									row, col)) {
+							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
 								// if not correct set border to red
-								guiBoard[row][col].setBorder(new LineBorder(
-										Color.red, 2, true));
+								guiBoard[row][col].setBorder(new LineBorder(Color.red, 2, true));
 
 								// when does it change back - after input?
 								// add listener
 							} else {
 								checkedAmount++;
+								guiBoard[row][col].setEditable(false);
+								guiBoard[row][col].setBackground(CLOSED_CELL_BGCOLOR);
 							}
 						}
 					}
@@ -256,24 +265,28 @@ public class SudokuJFrame extends JFrame {
 		hint.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				hint.setText("Hint (" + --hintAmount + ")");
-				Random rand = new Random();
-				int row, col;
-				do {
-					row = rand.nextInt(9);
-					col = rand.nextInt(9);
-				} while (!guiBoard[row][col].getText().equals(""));
-				guiBoard[row][col].setText(board[row][col].getValue() + "");
-				guiBoard[row][col].setBorder(new LineBorder(Color.green, 2,
-						true));
-				guiBoard[row][col].setEditable(false);
-				if (hintAmount == 0) {
+				if (hasEmpty()) {
+					hint.setText("Hint (" + --hintAmount + ")");
+					Random rand = new Random();
+					int row, col;
+					do {
+						row = rand.nextInt(9);
+						col = rand.nextInt(9);
+					} while (!guiBoard[row][col].getText().equals(""));
+					guiBoard[row][col].setText(board[row][col].getValue() + "");
+					guiBoard[row][col].setBackground(CLOSED_CELL_BGCOLOR);
+					guiBoard[row][col].setEditable(false);
+					if (hintAmount == 0) {
+						hint.setEnabled(false);
+						return;
+					}
+				} else {
 					hint.setEnabled(false);
-					return;
 				}
 			}
 		});
 		reset.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (int row = 0; row < board.length; row++) {
@@ -281,8 +294,7 @@ public class SudokuJFrame extends JFrame {
 						if (!board[row][col].isShown()) {
 							guiBoard[row][col].setText("");
 							guiBoard[row][col].setEditable(true);
-							guiBoard[row][col].setBorder(new LineBorder(
-									Color.black, 1, true));
+							guiBoard[row][col].setBorder(new LineBorder(Color.black, 1, true));
 							hint.setEnabled(true);
 							hintAmount = 3;
 							hint.setText("Hint (" + hintAmount + ")");
@@ -290,11 +302,31 @@ public class SudokuJFrame extends JFrame {
 					}
 				}
 			}
+
 		});
+	}
+
+	public boolean hasEmpty() {
+		for (int row = 0; row < board.length; row++) {
+			for (int col = 0; col < board.length; col++) {
+				if (!board[row][col].isShown() && guiBoard[row][col].getText().equals("")) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void win() {
 		messageLabel.setText("You Won!!");
+		hint.setEnabled(false);
+		for (int row = 0; row < board.length; row++) {
+			for (int col = 0; col < board.length; col++) {
+				if (!board[row][col].isShown()) {
+					guiBoard[row][col].setEditable(false);
+				}
+			}
+		}
 	}
 
 	/** The entry main() entry method */
@@ -302,4 +334,5 @@ public class SudokuJFrame extends JFrame {
 		SudokuJFrame frame = new SudokuJFrame();
 		frame.setVisible(true);
 	}
+
 }
