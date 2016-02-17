@@ -16,6 +16,7 @@ import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame; // Uses Swing's Container/Components
 import javax.swing.JLabel;
@@ -37,95 +38,71 @@ public class SudokuJFrame extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	// Name-constants for the game properties
-	public static final int GRID_SIZE = 9; // Size of the board
-	public static final int SUBGRID_SIZE = 3; // Size of the sub-grid
 
-	// Name-constants for UI control (sizes, colors and fonts)
-	public static final int CELL_SIZE = 60; // Cell width/height in pixels
-	public static final int CANVAS_WIDTH = CELL_SIZE * GRID_SIZE;
-	public static final int CANVAS_HEIGHT = CELL_SIZE * GRID_SIZE;
-	// Board width/height in pixels
-	public static final Color OPEN_CELL_BGCOLOR = Color.YELLOW;
-	public static final Color OPEN_CELL_TEXT_YES = new Color(0, 255, 0); // RGB
-	public static final Color OPEN_CELL_TEXT_NO = Color.RED;
-	public static final Color CLOSED_CELL_BGCOLOR = new Color(240, 240, 240); // RGB
-	public static final Color CLOSED_CELL_TEXT = Color.BLACK;
-	public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD,
-			20);
+	private int boardSize = 9; // Size of the board
+	private int subGridSize = 3; // Size of the sub-grid
+	private int cellSize = 60; // Cell width/height in pixels
+	private int boardWidth = cellSize * boardSize;
+	private int boardHeight = cellSize * boardSize;
 
-	// The game board composes of 9x9 JTextFields,
-	// each containing String "1" to "9", or empty String
-	private JTextField[][] guiBoard = new JTextField[GRID_SIZE][GRID_SIZE];
-	private JPanel sudokuPanel;
+	private Color backgroundColor = Color.pink;
+	private Color emptyCellColor = Color.white;
+	private Color filledCellColor = Color.YELLOW;
+	private Font numbersFont = new Font("Monospaced", Font.BOLD, 20);
+
+	private Container container;
+	private JTextField[][] guiBoard;
 	private SudokuCell[][] board;
-	private SudokuBoard sudokuBoard = new SudokuBoard();
+	private SudokuBoard sudokuBoard;
+
 	private JButton easy;
 	private JButton medium;
 	private JButton hard;
 	private JButton check;
 	private JButton reset;
 	private JButton hint;
+
 	private JLabel messageLabel;
+
+	private JPanel sudokuPanel;
 	private JPanel levelPanel;
 	private JPanel utilitiesPanel;
-	private int hintAmount = 3;
 
+	private int hintAmount = 3;
 	private int easyAmount = 2;
 	private int mediumAmount = 45;
 	private int hardAmount = 50;
 	private int level;
-
 	private int hiddenAmount;
 
 	/**
 	 * Constructor to setup the game and the UI Components
 	 */
 	public SudokuJFrame() {
-		Container container = getContentPane();
-		container.setLayout(new BorderLayout());
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Handle window closing
+		setTitle("Sudoku");
+
+		container = getContentPane();
 
 		sudokuPanel = new JPanel();
-		sudokuPanel.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE)); // 9x9
-		sudokuPanel.setBorder(new LineBorder(Color.BLACK, 3, true));
-		// GridLayout
-
 		levelPanel = new JPanel();
-		levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.Y_AXIS));
+		utilitiesPanel = new JPanel();
 
-		easy = new JButton("Easy");
-		medium = new JButton("Medium");
-		hard = new JButton("Hard");
+		messageLabel = new JLabel("SUDOKU");
+
+		sudokuBoard = new SudokuBoard();
+		guiBoard = new JTextField[boardSize][boardSize];
+
+		easy = new JButton();
+		medium = new JButton();
+		hard = new JButton();
 		check = new JButton("Check Board");
 		hint = new JButton("Hint (" + hintAmount + ")");
 		reset = new JButton("Reset");
 
-		levelPanel.add(Box.createRigidArea(new Dimension(5, 30)));
-		levelPanel.add(easy);
-		levelPanel.add(Box.createRigidArea(new Dimension(5, 20)));
-		levelPanel.add(medium);
-		levelPanel.add(Box.createRigidArea(new Dimension(5, 20)));
-		levelPanel.add(hard);
-
-		container.add(levelPanel, BorderLayout.EAST);
-
-		utilitiesPanel = new JPanel();
-		utilitiesPanel.setLayout(new FlowLayout());
-
-		utilitiesPanel.add(hint);
-		utilitiesPanel.add(check);
-		utilitiesPanel.add(reset);
-
-		container.add(utilitiesPanel, BorderLayout.SOUTH);
-
-		messageLabel = new JLabel("SUDOKU");
-		Font font = new Font("Rockwell Extra Bold", Font.PLAIN, 40);
-		messageLabel.setFont(font);
-		container.add(messageLabel, BorderLayout.NORTH);
-
 		// Construct 9x9 JTextFields and add to the content-pane
-		for (int row = 0; row < GRID_SIZE; ++row) {
-			for (int col = 0; col < GRID_SIZE; ++col) {
+		for (int row = 0; row < boardSize; ++row) {
+			for (int col = 0; col < boardSize; ++col) {
 				// set the size to only accept 1 number and only numbers
 				// make listeners for keyboard arrows
 				guiBoard[row][col] = new JTextField();// array
@@ -136,14 +113,14 @@ public class SudokuJFrame extends JFrame {
 
 				// Beautify all the cells
 				guiBoard[row][col].setHorizontalAlignment(JTextField.CENTER);
-				guiBoard[row][col].setFont(FONT_NUMBERS);
+				guiBoard[row][col].setFont(numbersFont);
 
 				guiBoard[row][col].addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent e) {
 						JTextField textField = (JTextField) e.getSource();
-						for (int row = 0; row < GRID_SIZE; ++row) {
-							for (int col = 0; col < GRID_SIZE; ++col) {
+						for (int row = 0; row < boardSize; ++row) {
+							for (int col = 0; col < boardSize; ++col) {
 								if (guiBoard[row][col] == textField) {
 									setBorder(row, col);
 									return;
@@ -155,19 +132,67 @@ public class SudokuJFrame extends JFrame {
 			}
 		}
 
+		format();
+		addPanels();
 		setGame(easyAmount);
 
 		// Set the size of the content-pane and pack all the components
 		// under this container.
-		sudokuPanel
-				.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
-		container.add(sudokuPanel);
+		sudokuPanel.setPreferredSize(new Dimension(boardWidth, boardHeight));
+
 		addActionListeners();
 		pack();
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Handle window closing
-		setTitle("Sudoku");
-		setVisible(true);
+	}
+
+	public void format() {
+		container.setLayout(new BorderLayout());
+		container.setBackground(backgroundColor);
+
+		sudokuPanel.setLayout(new GridLayout(boardSize, boardSize)); // 9x9
+		sudokuPanel.setBorder(new LineBorder(Color.BLACK, 3, true));
+
+		levelPanel.setBackground(backgroundColor);
+		levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.Y_AXIS));
+
+		easy.setHorizontalAlignment(JButton.CENTER);
+		easy.setIcon(new ImageIcon("easy.jpg"));
+		easy.setBackground(backgroundColor);
+		easy.setBorder(new LineBorder(Color.black, 0, true));
+
+		medium.setHorizontalAlignment(JButton.CENTER);
+		medium.setBackground(backgroundColor);
+		medium.setIcon(new ImageIcon("medium.jpg"));
+		medium.setBorder(new LineBorder(Color.black, 0, true));
+
+		hard.setHorizontalAlignment(JButton.CENTER);
+		hard.setBackground(backgroundColor);
+		hard.setBorder(new LineBorder(Color.black, 0, true));
+		hard.setIcon(new ImageIcon("hard.jpg"));
+
+		utilitiesPanel.setBackground(backgroundColor);
+		utilitiesPanel.setLayout(new FlowLayout());
+
+		messageLabel.setFont(new Font("Rockwell Extra Bold", Font.PLAIN, 70));
+	}
+
+	public void addPanels() {
+
+		levelPanel.add(Box.createRigidArea(new Dimension(5, 30)));
+		levelPanel.add(easy);
+		levelPanel.add(Box.createRigidArea(new Dimension(5, 20)));
+		levelPanel.add(medium);
+		levelPanel.add(Box.createRigidArea(new Dimension(5, 20)));
+		levelPanel.add(hard);
+		container.add(levelPanel, BorderLayout.EAST);
+
+		utilitiesPanel.add(hint);
+		utilitiesPanel.add(check);
+		utilitiesPanel.add(reset);
+		container.add(utilitiesPanel, BorderLayout.SOUTH);
+
+		container.add(messageLabel, BorderLayout.NORTH);
+		container.add(sudokuPanel);
 	}
 
 	public void newGame(int difficulty) {
@@ -180,19 +205,18 @@ public class SudokuJFrame extends JFrame {
 		hintAmount = 3;
 		hint.setText("Hint (" + hintAmount + ")");
 		// Construct 9x9 JTextFields and add to the content-pane
-		for (int row = 0; row < GRID_SIZE; ++row) {
-			for (int col = 0; col < GRID_SIZE; ++col) {
+		for (int row = 0; row < boardSize; ++row) {
+			for (int col = 0; col < boardSize; ++col) {
 
 				if (!board[row][col].isShown()) {
 					guiBoard[row][col].setText(""); // set to empty string
 					guiBoard[row][col].setEditable(true);
-					guiBoard[row][col].setBackground(OPEN_CELL_BGCOLOR);
+					guiBoard[row][col].setBackground(emptyCellColor);
 
 				} else {
 					guiBoard[row][col].setText(board[row][col].getValue() + "");
 					guiBoard[row][col].setEditable(false);
-					guiBoard[row][col].setBackground(CLOSED_CELL_BGCOLOR);
-					guiBoard[row][col].setForeground(CLOSED_CELL_TEXT);
+					guiBoard[row][col].setBackground(filledCellColor);
 				}
 				setBorder(row, col);
 			}
@@ -200,8 +224,7 @@ public class SudokuJFrame extends JFrame {
 	}
 
 	public void setBorder(int row, int col) {
-		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1,
-				1, Color.BLACK));
+		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
 
 		/*
 		 * if (row == guiBoard[0].length - 1) {
@@ -217,16 +240,13 @@ public class SudokuJFrame extends JFrame {
 
 		if (col % 3 == 0) { // add logic for grid borders
 			// set left border....
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4,
-					1, 1, Color.BLACK));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, Color.BLACK));
 		}
 		if (row % 3 == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1,
-					1, 1, Color.BLACK));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, Color.BLACK));
 		}
 		if (col % 3 == 0 && row % 3 == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4,
-					1, 1, Color.BLACK));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, Color.BLACK));
 		}
 
 	}
@@ -263,23 +283,18 @@ public class SudokuJFrame extends JFrame {
 				int checkedAmount = 0;
 				for (int row = 0; row < board.length; row++) {
 					for (int col = 0; col < board.length; col++) {
-						if (!board[row][col].isShown()
-								&& !guiBoard[row][col].getText().equals("")) {
+						if (!board[row][col].isShown() && !guiBoard[row][col].getText().equals("")) {
 							// if not shown and not empty text, then check box
-							if (!sudokuBoard.check(Integer
-									.parseInt(guiBoard[row][col].getText()),
-									row, col)) {
+							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
 								// if not correct set border to red
-								guiBoard[row][col].setBorder(new LineBorder(
-										Color.red, 2, true));
+								guiBoard[row][col].setBorder(new LineBorder(Color.red, 2, true));
 
 								// when does it change back - after input?
 								// add listener
 							} else {
 								checkedAmount++;
 								guiBoard[row][col].setEditable(false);
-								guiBoard[row][col]
-										.setBackground(CLOSED_CELL_BGCOLOR);
+								guiBoard[row][col].setBackground(filledCellColor);
 							}
 						}
 					}
@@ -306,7 +321,7 @@ public class SudokuJFrame extends JFrame {
 						col = rand.nextInt(9);
 					} while (!guiBoard[row][col].getText().equals(""));
 					guiBoard[row][col].setText(board[row][col].getValue() + "");
-					guiBoard[row][col].setBackground(CLOSED_CELL_BGCOLOR);
+					guiBoard[row][col].setBackground(filledCellColor);
 					guiBoard[row][col].setEditable(false);
 					if (hintAmount == 0) {
 						hint.setEnabled(false);
@@ -341,8 +356,7 @@ public class SudokuJFrame extends JFrame {
 	public boolean hasEmpty() {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board.length; col++) {
-				if (!board[row][col].isShown()
-						&& guiBoard[row][col].getText().equals("")) {
+				if (!board[row][col].isShown() && guiBoard[row][col].getText().equals("")) {
 					return true;
 				}
 			}
