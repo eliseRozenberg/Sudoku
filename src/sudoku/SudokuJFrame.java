@@ -30,8 +30,6 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-import com.sun.xml.internal.ws.api.model.wsdl.editable.EditableWSDLBoundFault;
-
 //remove variables and fix
 //Organize code
 //make listeners for keyboard arrows
@@ -57,12 +55,13 @@ public class SudokuJFrame extends JFrame {
 
 	private Color backgroundColor = Color.pink;
 	private Color emptyCellColor = Color.white;
-	private Color filledCellColor = Color.YELLOW;
+	private Color filledCellColor = new Color(255,255,102);
 	private Color borderColor = Color.black;
-	private Color fontColor = Color.green;
+	private Color buttonColor = new Color(135,206,235);
+	private Color fontColor = new Color(222,184,135);
 	private Font numbersFont = new Font("Calibri", Font.BOLD, 40);
 	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
-	private Font buttonFont = new Font("Calibri", Font.BOLD, 30);
+	private Font buttonFont = new Font("Calibri", Font.BOLD, 40);
 	private Border levelButtonBorder = new LineBorder(Color.black, 0, true);
 
 	private Container container;
@@ -179,17 +178,20 @@ public class SudokuJFrame extends JFrame {
 		hard.setBorder(levelButtonBorder);
 		hard.setIcon(new ImageIcon("hard.jpg"));
 
-		hint.setPreferredSize(new Dimension(250, 100));
+		hint.setPreferredSize(new Dimension(160,50));
 		hint.setFont(buttonFont);
-		hint.setBackground(Color.cyan);
+		hint.setBackground(buttonColor);
+		hint.setForeground(Color.white);
 
-		check.setPreferredSize(new Dimension(250, 100));
+		check.setPreferredSize(new Dimension(250,50));
 		check.setFont(buttonFont);
-		check.setBackground(Color.cyan);
+		check.setForeground(Color.white);
+		check.setBackground(buttonColor);
 
-		reset.setPreferredSize(new Dimension(250, 100));
+		reset.setPreferredSize(new Dimension(130, 50));
 		reset.setFont(buttonFont);
-		reset.setBackground(Color.cyan);
+		reset.setBackground(buttonColor);
+		reset.setForeground(Color.white);
 
 		utilitiesPanel.setBackground(backgroundColor);
 		utilitiesPanel.setLayout(new FlowLayout());
@@ -223,6 +225,8 @@ public class SudokuJFrame extends JFrame {
 		sudokuBoard.clearTable();
 		sudokuBoard.fillBoard(difficulty);
 		board = sudokuBoard.getBoard();
+		check.setEnabled(true);
+		reset.setEnabled(true);
 		hint.setEnabled(true);
 		hintAmount = 3;
 		hint.setText("Hint (" + hintAmount + ")");
