@@ -17,6 +17,7 @@ import java.util.Random;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,7 +36,7 @@ public class SudokuJFrame extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private int boardSize;
 	private int subGridSize;
 	private int cellSize;
@@ -101,8 +102,6 @@ public class SudokuJFrame extends JFrame {
 		check = new JButton("Check Board");
 		hint = new JButton("Hint (" + hintAmount + ")");
 		reset = new JButton("Reset");
-		
-		
 
 		// Construct 9x9 JTextFields and add to the container
 		for (int row = 0; row < boardSize; ++row) {
@@ -134,7 +133,7 @@ public class SudokuJFrame extends JFrame {
 				});
 			}
 		}
-	
+
 		format();
 		addPanels();
 
@@ -423,7 +422,13 @@ public class SudokuJFrame extends JFrame {
 		frame.setVisible(true);
 		JFXPanel fxPanel = new JFXPanel();
 		Media media = new Media(Paths.get("song.mp3").toUri().toString());
-		new MediaPlayer(media).play();
+		MediaPlayer player = new MediaPlayer(media);
+		player.setOnEndOfMedia(new Runnable() {
+			public void run() {
+				player.seek(Duration.ZERO);
+			}
+		});
+		player.play();
 	}
 
 }
