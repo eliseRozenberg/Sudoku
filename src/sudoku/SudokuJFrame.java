@@ -55,10 +55,10 @@ public class SudokuJFrame extends JFrame {
 
 	private Color backgroundColor = Color.pink;
 	private Color emptyCellColor = Color.white;
-	private Color filledCellColor = new Color(255,255,102);
-	private Color borderColor = Color.black;
+	private Color filledCellColor = new Color(255,250,205);
+	private Color borderColor = new Color(218,165,32);
 	private Color buttonColor = new Color(135,206,235);
-	private Color fontColor = new Color(222,184,135);
+	private Color fontColor = new Color(144,238,144);
 	private Font numbersFont = new Font("Calibri", Font.BOLD, 40);
 	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
 	private Font buttonFont = new Font("Calibri", Font.BOLD, 40);
