@@ -390,7 +390,6 @@ public class SudokuJFrame extends JFrame {
 					}
 				}
 			}
-
 		});
 	}
 
@@ -422,7 +421,7 @@ public class SudokuJFrame extends JFrame {
 	public static void main(String[] args) {
 		SudokuJFrame frame = new SudokuJFrame();
 		frame.setVisible(true);
-		JFXPanel fxPanel = new JFXPanel();
+		//JFXPanel fxPanel = new JFXPanel();
 		Media media = new Media(Paths.get("song.mp3").toUri().toString());
 		new MediaPlayer(media).play();
 	}
