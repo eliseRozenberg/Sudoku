@@ -11,8 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.nio.file.Paths;
 import java.util.Random;
 
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -27,6 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+
+import com.sun.xml.internal.ws.api.model.wsdl.editable.EditableWSDLBoundFault;
 
 //remove variables and fix
 //Organize code
@@ -57,8 +61,7 @@ public class SudokuJFrame extends JFrame {
 	private Color borderColor = Color.black;
 	private Color fontColor = Color.green;
 	private Font numbersFont = new Font("Calibri", Font.BOLD, 40);
-	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN,
-			100);
+	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
 	private Font buttonFont = new Font("Calibri", Font.BOLD, 30);
 	private Border levelButtonBorder = new LineBorder(Color.black, 0, true);
 
@@ -124,8 +127,7 @@ public class SudokuJFrame extends JFrame {
 					public void keyReleased(KeyEvent e) {
 						JTextField textField = (JTextField) e.getSource();
 						if (textField.getText().length() > 1) {
-							textField.setText(textField.getText().charAt(0)
-									+ "");
+							textField.setText(textField.getText().charAt(0) + "");
 						}
 						if (!textField.getText().matches("^[1-9]")) {
 							textField.setText("");
@@ -246,46 +248,35 @@ public class SudokuJFrame extends JFrame {
 
 	// add logic for grid borders
 	public void setBorder(int row, int col) {
-		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1,
-				1, borderColor));
+		guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, borderColor));
 		if (col % subGridSize == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4,
-					1, 1, borderColor));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 1, 1, borderColor));
 		}
 		if (row % subGridSize == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1,
-					1, 1, borderColor));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 1, borderColor));
 		}
 		if (col % subGridSize == 0 && row % subGridSize == 0) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4,
-					1, 1, borderColor));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 4, 1, 1, borderColor));
 		}
 		if (col == boardSize - 1) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1,
-					1, 4, borderColor));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 4, borderColor));
 			if (row == 0) {
-				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4,
-						1, 1, 4, borderColor));
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 4, borderColor));
 			}
 			if (row % subGridSize == 0) {
-				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4,
-						1, 1, 4, borderColor));
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(4, 1, 1, 4, borderColor));
 			}
 			if (row == boardSize - 1) {
-				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1,
-						1, 4, 4, borderColor));
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 4, 4, borderColor));
 			}
 		}
 		if (row == boardSize - 1) {
-			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1,
-					4, 1, borderColor));
+			guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 4, 1, borderColor));
 			if (col % subGridSize == 0) {
-				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1,
-						4, 4, 1, borderColor));
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 4, 4, 1, borderColor));
 			}
 			if (col == boardSize - 1) {
-				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1,
-						1, 4, 4, borderColor));
+				guiBoard[row][col].setBorder(BorderFactory.createMatteBorder(1, 1, 4, 4, borderColor));
 			}
 		}
 	}
@@ -320,20 +311,15 @@ public class SudokuJFrame extends JFrame {
 				int checkedAmount = 0;
 				for (int row = 0; row < board.length; row++) {
 					for (int col = 0; col < board.length; col++) {
-						if (!board[row][col].isShown()
-								&& !guiBoard[row][col].getText().equals("")) {
+						if (!board[row][col].isShown() && !guiBoard[row][col].getText().equals("")) {
 							// if not shown and not empty text, then check box
-							if (!sudokuBoard.check(Integer
-									.parseInt(guiBoard[row][col].getText()),
-									row, col)) {
+							if (!sudokuBoard.check(Integer.parseInt(guiBoard[row][col].getText()), row, col)) {
 								// if not correct set border to red
-								guiBoard[row][col].setBorder(new LineBorder(
-										Color.red, 3, true));
+								guiBoard[row][col].setBorder(new LineBorder(Color.red, 3, true));
 							} else {
 								checkedAmount++;
 								guiBoard[row][col].setEditable(false);
-								guiBoard[row][col]
-										.setBackground(filledCellColor);
+								guiBoard[row][col].setBackground(filledCellColor);
 							}
 						}
 					}
@@ -392,8 +378,7 @@ public class SudokuJFrame extends JFrame {
 	public boolean hasEmpty() {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board.length; col++) {
-				if (!board[row][col].isShown()
-						&& guiBoard[row][col].getText().equals("")) {
+				if (!board[row][col].isShown() && guiBoard[row][col].getText().equals("")) {
 					return true;
 				}
 			}
@@ -419,11 +404,13 @@ public class SudokuJFrame extends JFrame {
 	public static void main(String[] args) {
 		SudokuJFrame frame = new SudokuJFrame();
 		frame.setVisible(true);
-
-		String song = "song.mp3";
-		Media media = new Media(song);
-		MediaPlayer mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.play();
+		JFXPanel fxPanel = new JFXPanel();
+		// String song = "song.mp3";
+		// Media media = new Media(song);
+		// MediaPlayer mediaPlayer = new MediaPlayer(media);
+		// mediaPlayer.play();
+		Media media = new Media(Paths.get("song.mp3").toUri().toString());
+		new MediaPlayer(media).play();
 	}
 
 }
