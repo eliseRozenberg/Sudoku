@@ -13,16 +13,12 @@ public class SudokuBoard {
 		blockSize = 3;
 		boardSize = blockSize * blockSize;
 		numberOfCells = boardSize * boardSize;
-		board = new SudokuCell[9][9];
-		for (int row = 0; row < 9; ++row) {
-			for (int col = 0; col < 9; ++col) {
+		board = new SudokuCell[boardSize][boardSize];
+		for (int row = 0; row < boardSize; ++row) {
+			for (int col = 0; col < boardSize; ++col) {
 				board[row][col] = new SudokuCell();
 			}
 		}
-	}
-
-	public SudokuCell[][] getBoard() {
-		return board;
 	}
 
 	public void fillBoard(int difficulty) {
@@ -91,12 +87,12 @@ public class SudokuBoard {
 	 * @return True if current is legal, false otherwise.
 	 */
 	private boolean legalMove(int x, int y, int current) {
-		for (int col = 0; col < 9; col++) {
+		for (int col = 0; col < boardSize; col++) {
 			if (current == board[x][col].getValue()) {
 				return false;
 			}
 		}
-		for (int row = 0; row < 9; row++) {
+		for (int row = 0; row < boardSize; row++) {
 			if (current == board[row][y].getValue()) {
 				return false;
 			}
@@ -134,11 +130,11 @@ public class SudokuBoard {
 		 * This is human difficulty, not algorighmically (though there is some
 		 * correlation)
 		 */
-		double remainingSquares = 81;
+		double remainingSquares = numberOfCells;
 		double remainingHoles = holesToMake;
 
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		for (int i = 0; i < boardSize; i++) {
+			for (int j = 0; j < boardSize; j++) {
 				double holeChance = remainingHoles / remainingSquares;
 				if (Math.random() <= holeChance) {
 					board[i][j].hide();
@@ -158,19 +154,35 @@ public class SudokuBoard {
 	}
 
 	public void clearTable() {
-		for (int i = 0; i < 9; ++i) {
-			for (int j = 0; j < 9; ++j) {
+		for (int i = 0; i < boardSize; ++i) {
+			for (int j = 0; j < boardSize; ++j) {
 				board[i][j].clear();
 			}
 		}
+	}
+
+	public SudokuCell[][] getBoard() {
+		return board;
+	}
+
+	public int getBlockSize() {
+		return blockSize;
+	}
+
+	public int getBoardSize() {
+		return boardSize;
+	}
+
+	public int getNumberOfCells() {
+		return numberOfCells;
 	}
 
 	/**
 	 * Prints a representation of board on stdout
 	 */
 	public void print() {
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		for (int i = 0; i < boardSize; i++) {
+			for (int j = 0; j < boardSize; j++) {
 				System.out.print(board[i][j].getValue() + "  ");
 			}
 			System.out.println();

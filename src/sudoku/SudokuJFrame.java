@@ -30,39 +30,28 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-//remove variables and fix
-//Organize code
-//make listeners for keyboard arrows
-//add background image
-//make gui cooler
-//add audio
-//make spaces between thing (margins)
-//board not touching edge 
-//level buttons not touching board
-//format utilities buttons
-
 public class SudokuJFrame extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private int boardSize;
+	private int subGridSize;
+	private int cellSize;
+	private int boardWidth;
+	private int boardHeight;
 
-	private int boardSize = 9; // Size of the board
-	private int subGridSize = 3; // Size of the sub-grid
-	private int cellSize = 60; // Cell width/height in pixels
-	private int boardWidth = cellSize * boardSize;
-	private int boardHeight = cellSize * boardSize;
-
-	private Color backgroundColor = Color.pink;
-	private Color emptyCellColor = Color.white;
-	private Color filledCellColor = new Color(255,250,205);
-	private Color borderColor = new Color(218,165,32);
-	private Color buttonColor = new Color(135,206,235);
-	private Color fontColor = new Color(144,238,144);
-	private Font numbersFont = new Font("Calibri", Font.BOLD, 40);
-	private Font messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
-	private Font buttonFont = new Font("Calibri", Font.BOLD, 40);
-	private Border levelButtonBorder = new LineBorder(Color.black, 0, true);
+	private Color backgroundColor;
+	private Color emptyCellColor;
+	private Color filledCellColor;
+	private Color borderColor;
+	private Color buttonColor;
+	private Color fontColor;
+	private Font numbersFont;
+	private Font messageLabelFont;
+	private Font buttonFont;
+	private Border levelButtonBorder;
 
 	private Container container;
 	private JTextField[][] guiBoard;
@@ -82,10 +71,10 @@ public class SudokuJFrame extends JFrame {
 	private JPanel levelPanel;
 	private JPanel utilitiesPanel;
 
-	private int hintAmount = 3;
-	private int easyAmount = 2;
-	private int mediumAmount = 45;
-	private int hardAmount = 50;
+	private int hintAmount;
+	private int easyAmount;
+	private int mediumAmount;
+	private int hardAmount;
 	private int level;
 
 	/**
@@ -94,8 +83,8 @@ public class SudokuJFrame extends JFrame {
 	public SudokuJFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Handle window closing
 		setTitle("Sudoku");
-
 		container = getContentPane();
+		setDetails();
 
 		sudokuPanel = new JPanel();
 		levelPanel = new JPanel();
@@ -112,6 +101,8 @@ public class SudokuJFrame extends JFrame {
 		check = new JButton("Check Board");
 		hint = new JButton("Hint (" + hintAmount + ")");
 		reset = new JButton("Reset");
+		
+		
 
 		// Construct 9x9 JTextFields and add to the container
 		for (int row = 0; row < boardSize; ++row) {
@@ -143,13 +134,37 @@ public class SudokuJFrame extends JFrame {
 				});
 			}
 		}
-
+	
 		format();
 		addPanels();
 
 		setGame(easyAmount);
 		addActionListeners();
 		pack();
+	}
+
+	public void setDetails() {
+		boardSize = 9; // Size of the board
+		subGridSize = 3; // Size of the sub-grid
+		cellSize = 60; // Cell width/height in pixels
+		boardWidth = cellSize * boardSize;
+		boardHeight = cellSize * boardSize;
+
+		backgroundColor = Color.pink;
+		emptyCellColor = Color.white;
+		filledCellColor = new Color(255, 250, 205);
+		borderColor = new Color(218, 165, 32);
+		buttonColor = new Color(135, 206, 235);
+		fontColor = new Color(144, 238, 144);
+		numbersFont = new Font("Calibri", Font.BOLD, 40);
+		messageLabelFont = new Font("Rockwell Extra Bold", Font.PLAIN, 100);
+		buttonFont = new Font("Calibri", Font.BOLD, 40);
+		levelButtonBorder = new LineBorder(Color.black, 0, true);
+
+		hintAmount = 3;
+		easyAmount = 40;
+		mediumAmount = 45;
+		hardAmount = 50;
 	}
 
 	public void format() {
@@ -178,12 +193,12 @@ public class SudokuJFrame extends JFrame {
 		hard.setBorder(levelButtonBorder);
 		hard.setIcon(new ImageIcon("hard.jpg"));
 
-		hint.setPreferredSize(new Dimension(160,50));
+		hint.setPreferredSize(new Dimension(160, 50));
 		hint.setFont(buttonFont);
 		hint.setBackground(buttonColor);
 		hint.setForeground(Color.white);
 
-		check.setPreferredSize(new Dimension(250,50));
+		check.setPreferredSize(new Dimension(250, 50));
 		check.setFont(buttonFont);
 		check.setForeground(Color.white);
 		check.setBackground(buttonColor);
@@ -404,15 +419,10 @@ public class SudokuJFrame extends JFrame {
 		}
 	}
 
-	/** The entry main() entry method */
 	public static void main(String[] args) {
 		SudokuJFrame frame = new SudokuJFrame();
 		frame.setVisible(true);
 		JFXPanel fxPanel = new JFXPanel();
-		// String song = "song.mp3";
-		// Media media = new Media(song);
-		// MediaPlayer mediaPlayer = new MediaPlayer(media);
-		// mediaPlayer.play();
 		Media media = new Media(Paths.get("song.mp3").toUri().toString());
 		new MediaPlayer(media).play();
 	}
